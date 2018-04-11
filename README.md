@@ -1,2 +1,2 @@
 # web-galaxy
-Racket library to write dynamic websites and APIs
+A minimalist web framework for the Racket web-server
