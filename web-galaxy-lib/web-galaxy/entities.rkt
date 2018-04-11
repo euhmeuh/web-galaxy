@@ -1,6 +1,8 @@
 #lang racket/base
 
 (provide
+  (all-from-out "renderer.rkt")
+
   (struct-out link)
   render-link
 

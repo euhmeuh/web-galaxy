@@ -1,8 +1,8 @@
 #lang racket/base
 
 (provide
-  current-response-error
-  current-response-not-found
+  current-error-responder
+  current-not-found-responder
   req
   response-page
   define-response)
@@ -34,15 +34,19 @@
              body ...)))]))
 
 (define-response (not-found)
-  (response #:code 404
-            #:message #"Not Found"))
+  (response/full
+    404 #"Not found"
+    (current-seconds) TEXT/HTML-MIME-TYPE '()
+    '(#"404 - Not found")))
 
 (define (response-error url exception)
   (log-error "~s" `((exn ,(exn-message exception))
                     (uri ,(url->string url))
                     (time ,(current-seconds))))
-  (response #:code 500
-            #:message #"Internal server error"))
+  (response/full
+    500 #"Internal server error"
+    (current-seconds) TEXT/HTML-MIME-TYPE '()
+    '(#"500 - Internal server error")))
 
-(define current-response-not-found (make-parameter response-not-found))
-(define current-response-error (make-parameter response-error))
+(define current-not-found-responder (make-parameter response-not-found))
+(define current-error-responder (make-parameter response-error))

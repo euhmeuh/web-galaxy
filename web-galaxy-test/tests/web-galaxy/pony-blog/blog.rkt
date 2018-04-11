@@ -2,7 +2,10 @@
 
 (require
   web-galaxy/response
-  web-galaxy/serve)
+  web-galaxy/serve
+  "models/article.rkt")
+
+(define articles '())
 
 (define-response (index)
   (local-require "pages/index.rkt")
@@ -20,4 +23,4 @@
 (serve/all
   [("") response-index]
   [("article" (string-arg)) response-article]
-  [("tags" (string-arg)) response-tags])
+  [("tags" (symbol-arg)) response-tags])
