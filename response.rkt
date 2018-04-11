@@ -1,6 +1,8 @@
 #lang racket/base
 
 (provide
+  current-response-error
+  current-response-not-found
   req
   response-page
   define-response)
@@ -30,3 +32,17 @@
          (syntax-parameterize ([req (make-rename-transformer #'request)])
            (parameterize ([current-language (request-language req)])
              body ...)))]))
+
+(define-response (not-found)
+  (response #:code 404
+            #:message #"Not Found"))
+
+(define (response-error url exception)
+  (log-error "~s" `((exn ,(exn-message exception))
+                    (uri ,(url->string url))
+                    (time ,(current-seconds))))
+  (response #:code 500
+            #:message #"Internal server error"))
+
+(define current-response-not-found (make-parameter response-not-found))
+(define current-response-error (make-parameter response-error))
