@@ -25,13 +25,21 @@
 (define current-server-root-path (make-parameter (current-directory)))
 (define current-server-static-paths (make-parameter '()))
 
+(define (wrap-in-logger dispatcher)
+  (local-require (only-in web-server/dispatchers/dispatch-log
+                          extended-format))
+  (lambda (req)
+    (display (extended-format req))
+    (flush-output)
+    (dispatcher req)))
+
 (define-syntax-rule (serve/all ((endpoint arg ...) response) ...)
   (begin
     (define-values
       (dispatcher url-maker)
       (dispatch-rules ((endpoint arg ...) response) ...))
     (serve/servlet
-      dispatcher
+      (wrap-in-logger dispatcher)
       #:command-line? #t
       #:banner? #t
       #:servlet-regexp #rx""
