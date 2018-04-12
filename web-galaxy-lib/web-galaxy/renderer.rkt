@@ -1,6 +1,7 @@
 #lang racket/base
 
 (provide
+  current-custom-renderers
   gen:renderer
   define-renderer
   render-element
@@ -31,9 +32,21 @@
          (define function-name
            (make-parameter (lambda (nmp.name) body ...))))]))
 
+(define current-custom-renderers (make-parameter '()))
+
+(define (get-custom-renderer element)
+  (ormap (lambda (rule)
+           (let ([predicate (car rule)]
+                 [renderer (cdr rule)])
+             (if (predicate element)
+                 renderer
+                 #f)))
+         (current-custom-renderers)))
+
 (define (render-element element)
   (cond
     [(renderer? element) (render element)]
+    [(get-custom-renderer element) => (lambda (r) (r element))]
     [else element]))
 
 (struct container (elements))
