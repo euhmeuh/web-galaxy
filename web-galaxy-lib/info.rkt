@@ -1,8 +1,8 @@
 #lang info
 
 (define collection 'multi)
-(define deps '("base" "web-server-lib"))
-(define build-deps '("rackunit-lib"))
-(define pkg-desc "implementation (no documentation) part of \"web-galaxy\"")
+(define deps '("base" "anaphoric" "web-server-lib" "urlang"))
+(define build-deps '())
+(define pkg-desc "Implementation (no documentation) part of \"web-galaxy\"")
 (define pkg-authors '(euhmeuh))
 (define version "0.1.0")

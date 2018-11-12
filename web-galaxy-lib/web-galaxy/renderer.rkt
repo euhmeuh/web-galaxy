@@ -6,12 +6,14 @@
   define-renderer
   render-element
   (struct-out container)
-  render-elements)
+  render-elements
+  define-simple-container)
 
 (require
   (for-syntax racket/base
               racket/syntax
               syntax/parse)
+  syntax/parse/define
   racket/generic)
 
 (define-generics renderer
@@ -23,7 +25,7 @@
     (pattern name:id))
   (syntax-parse stx
     [(_ nmp:name-maybe-parent (field ...) body ...)
-     #:with function-name (format-id stx "render-~a" #'nmp.name)
+     #:with function-name (format-id #'nmp.name "render-~a" #'nmp.name)
      #`(begin
          (struct #,@ #'nmp (field ...)
           #:methods gen:renderer
@@ -53,3 +55,7 @@
 
 (define (render-elements container)
   (map render-element (container-elements container)))
+
+(define-simple-macro (define-simple-container name)
+  (define-renderer name container ()
+    `(name ,@(render-elements name))))

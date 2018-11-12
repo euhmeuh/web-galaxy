@@ -4,14 +4,21 @@
   current-error-responder
   current-not-found-responder
   req
-  response-page
+  response/page
+  response/file
+  response/json
+  response/full
+  response/output
+  response/xexpr
   define-response)
 
 (require
   (for-syntax racket/base
               racket/syntax
               syntax/parse)
+  racket/port
   racket/stxparam
+  json
   web-server/servlet
   "translate.rkt")
 
@@ -19,10 +26,22 @@
   (lambda (stx)
     (raise-syntax-error stx 'req "Used outside define-response")))
 
-(define-syntax-rule (response-page content)
+(define-syntax-rule (response/page content)
   (response/xexpr
     #:preamble #"<!DOCTYPE html>"
     content))
+
+(define-syntax-rule (response/file file)
+  (response/full
+    200 #"OK" (current-seconds) TEXT/HTML-MIME-TYPE
+    '()
+    (port->bytes-lines (open-input-file file) #:close? #t)))
+
+(define-syntax-rule (response/json content)
+  (response/full
+    200 #"OK" (current-seconds) #"application/json; charset=utf-8"
+    '()
+    (list (jsexpr->bytes content))))
 
 (define-syntax (define-response stx)
   (syntax-parse stx

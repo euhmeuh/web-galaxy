@@ -20,8 +20,19 @@
   pubdate>=?
   pubdate>?
 
-  newline
-  strong)
+  (rename-out [make-p p])
+  p?
+  render-p
+
+  (rename-out [make-div div])
+  div?
+  render-div
+
+  (rename-out [make-strong strong])
+  strong?
+  render-strong
+
+  newline)
 
 (require
   "renderer.rkt")
@@ -68,8 +79,14 @@
   (local-require (only-in srfi/19 date->string))
   (date->string date (hash-ref pubdate-formats format)))
 
+(define-simple-container p)
+(define (make-p . elements) (p elements))
+
+(define-simple-container div)
+(define (make-div . elements) (div elements))
+
+(define-simple-container strong)
+(define (make-strong . elements) (strong elements))
+
 (define (newline)
   '(br))
-
-(define (strong . text)
-  `(strong ,@text))
