@@ -4,11 +4,18 @@
   article-page)
 
 (require
-  "_base.rkt")
+  racket/list
+  "_base.rkt"
+  "../models/article.rkt")
 
-(define (article-page id)
-  (base-page "Article title" '()
+(define (render-tag-link tag)
+  `(a ([href ,(format "/tag/~a" tag)])
+      ,(symbol->string tag)))
+
+(define (article-page article)
+  (base-page (article-title article) '()
     (lambda ()
       `(main
-         (h2 "Great article")
-         (p "Hello world!")))))
+         (h2 ,(article-title article))
+         (h3 "Tags:" ,@(add-between (map render-tag-link (article-tags article)) 'nbsp))
+         ,@(article-content article)))))
