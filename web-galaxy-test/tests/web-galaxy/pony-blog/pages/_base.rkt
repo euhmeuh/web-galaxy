@@ -10,8 +10,8 @@
 
 (define basic-links
   (list
-    (link "Home" "/")
-    (link "About" "#about")))
+    (link "/" "Home")
+    (link "#about" "About")))
 
 (define (render-navigation links)
   `(nav ([role "navigation"])

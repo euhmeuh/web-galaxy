@@ -37,7 +37,7 @@
 (require
   "renderer.rkt")
 
-(define-renderer link (text url)
+(define-renderer link (url text)
   `(a ([href ,(link-url link)]) ,(link-text link)))
 
 (define-renderer pubdate (year month day)
