@@ -28,6 +28,10 @@
   div?
   render-div
 
+  (rename-out [make-span span])
+  span?
+  render-span
+
   (rename-out [make-strong strong])
   strong?
   render-strong
@@ -84,6 +88,9 @@
 
 (define-simple-container div)
 (define (make-div . elements) (div elements))
+
+(define-simple-container span)
+(define (make-span . elements) (span elements))
 
 (define-simple-container strong)
 (define (make-strong . elements) (strong elements))
