@@ -13,6 +13,8 @@
   serve/all)
 
 (require
+  syntax/parse/define
+  (for-syntax racket/base)
   web-server/servlet
   web-server/servlet-env
   web-server/managers/none
@@ -25,21 +27,32 @@
 (define current-server-root-path (make-parameter (current-directory)))
 (define current-server-static-paths (make-parameter '()))
 
-(define (wrap-in-logger dispatcher)
-  (local-require (only-in web-server/dispatchers/dispatch-log
-                          extended-format))
-  (lambda (req)
-    (display (extended-format req))
-    (flush-output)
-    (dispatcher req)))
+(begin-for-syntax
+  (define-syntax-class method-exp
+    (pattern (~datum GET))
+    (pattern (~datum HEAD))
+    (pattern (~datum POST))
+    (pattern (~datum PUT))
+    (pattern (~datum DELETE))
+    (pattern (~datum TRACE))
+    (pattern (~datum OPTIONS))
+    (pattern (~datum CONNECT))
+    (pattern (~datum PATCH))))
 
-(define-syntax-rule (serve/all ((endpoint arg ...) response) ...)
+(define-simple-macro
+  (serve/all (method:method-exp (endpoint arg ...) response) ...)
+  #:with (method-string ...) (datum->syntax
+                               #'(method ...)
+                               (map (lambda (m)
+                                      (string-downcase
+                                        (symbol->string (syntax-e m))))
+                                    (syntax->list #'(method ...))))
   (begin
     (define-values
       (dispatcher url-maker)
-      (dispatch-rules ((endpoint arg ...) response) ...))
+      (dispatch-rules ((endpoint arg ...) #:method method-string response) ...))
     (serve/servlet
-      (wrap-in-logger dispatcher)
+      dispatcher
       #:command-line? #t
       #:banner? #t
       #:servlet-regexp #rx""
@@ -50,6 +63,5 @@
       #:server-root-path (current-server-root-path)
       #:extra-files-paths (current-server-static-paths)
       #:file-not-found-responder (current-not-found-responder)
-      ;;#:log-file (current-output-port)
-      ;;#:log-format 'extended
-      )))
+      #:log-file (current-output-port)
+      #:log-format 'extended)))
