@@ -4,6 +4,7 @@
   current-error-responder
   current-not-found-responder
   req
+  req-data
   response/page
   response/file
   response/json
@@ -16,6 +17,7 @@
   (for-syntax racket/base
               racket/syntax
               syntax/parse)
+  racket/match
   racket/port
   racket/stxparam
   json
@@ -24,7 +26,7 @@
 
 (define-syntax-parameter req
   (lambda (stx)
-    (raise-syntax-error stx 'req "Used outside define-response")))
+    (raise-syntax-error 'req "Used outside define-response" stx)))
 
 (define-syntax-rule (response/page content)
   (response/xexpr
@@ -69,3 +71,13 @@
 
 (define current-not-found-responder (make-parameter response-not-found))
 (define current-error-responder (make-parameter response-error))
+
+(define (req-data key request)
+  (match
+    (bindings-assq
+      (string->bytes/utf-8 key)
+      (request-bindings/raw request))
+    [(? binding:form? b)
+       (bytes->string/utf-8
+         (binding:form-value b))]
+    [_ #f]))
