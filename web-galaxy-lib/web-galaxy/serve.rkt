@@ -6,6 +6,8 @@
   real-arg
   string-arg
   symbol-arg
+  current-server-cert
+  current-server-key
   current-server-listen-ip
   current-server-port
   current-server-root-path
@@ -22,6 +24,8 @@
   "site-mode.rkt"
   "response.rkt")
 
+(define current-server-cert (make-parameter #f))
+(define current-server-key (make-parameter #f))
 (define current-server-listen-ip (make-parameter (if-debug "127.0.0.1" #f)))
 (define current-server-port (make-parameter (if-debug 8000 80)))
 (define current-server-root-path (make-parameter (current-directory)))
@@ -63,5 +67,8 @@
       #:server-root-path (current-server-root-path)
       #:extra-files-paths (current-server-static-paths)
       #:file-not-found-responder (current-not-found-responder)
+      #:ssl? (and (current-server-cert) (current-server-key) #t)
+      #:ssl-cert (current-server-cert)
+      #:ssl-key (current-server-key)
       #:log-file (current-output-port)
       #:log-format 'extended)))
