@@ -1,5 +1,7 @@
 #lang racket/base
 
+(module+ main
+
 (require
   web-galaxy/response
   web-galaxy/serve
@@ -32,3 +34,5 @@
   [GET ("") response-index]
   [GET ("article" (string-arg)) response-article]
   [GET ("tag" (symbol-arg)) response-tags])
+
+)
