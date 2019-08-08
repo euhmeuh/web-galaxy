@@ -10,9 +10,11 @@
   define-simple-container)
 
 (require
-  (for-syntax racket/base
-              racket/syntax
-              syntax/parse)
+  (for-syntax
+    racket/base
+    racket/syntax
+    syntax/parse
+    web-galaxy/utils)
   syntax/parse/define
   racket/generic)
 
@@ -25,14 +27,22 @@
     (pattern name:id))
   (syntax-parse stx
     [(_ nmp:name-maybe-parent (field ...) body ...)
-     #:with function-name (format-id #'nmp.name "render-~a" #'nmp.name)
+     #:with function-name (format-prefix "render-" #'nmp.name)
+     #:with (field-getter ...)
+            (stx-map (lambda (field)
+                       (define field-func (format-id field "~a-~a" #'nmp.name field))
+                       #`(#,field-func nmp.name))
+                     #'(field ...))
      #`(begin
          (struct #,@ #'nmp (field ...)
           #:methods gen:renderer
           [(define (render nmp.name)
             ((function-name) nmp.name))])
          (define function-name
-           (make-parameter (lambda (nmp.name) body ...))))]))
+           (make-parameter
+             (lambda (nmp.name)
+               (let ([field field-getter] ...)
+                 body ...)))))]))
 
 (define current-custom-renderers (make-parameter '()))
 

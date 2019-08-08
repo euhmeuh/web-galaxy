@@ -42,10 +42,9 @@
   "renderer.rkt")
 
 (define-renderer link (url text)
-  `(a ([href ,(link-url link)]) ,(link-text link)))
+  `(a ([href ,url]) ,text))
 
 (define-renderer pubdate (year month day)
-  (define day (pubdate-day pubdate))
   (define the-date (pubdate->date pubdate))
   `(time ([datetime ,(format-date the-date (if day 'iso 'iso-month))])
          ,(format-date the-date (if day 'full 'month))))
