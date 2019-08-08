@@ -37,19 +37,20 @@
   web-server/servlet
   "translate.rkt")
 
-(define current-response-headers (make-parameter '()))
+(define current-response-headers (make-parameter (make-hasheq)))
 
 (define-simple-macro (response-parameterize ([h-name:id h-value:expr] ...) body:expr ...+)
   (parameterize ([current-response-headers
-                  (append (current-response-headers)
-                          (list (list 'h-name h-value) ...))])
+                  (apply hash-set*
+                         (current-response-headers)
+                         (list 'h-name h-value) ...)])
     body ...))
 
 (define (response-headers->headers-list headers)
-  (map (lambda (a-header)
-         (header (string->bytes/utf-8 (symbol->string (car a-header)))
-                 (string->bytes/utf-8 (cadr a-header))))
-       headers))
+  (hash-map headers
+            (lambda (key val)
+              (header (string->bytes/utf-8 (symbol->string key))
+                      (string->bytes/utf-8 val)))))
 
 (define-syntax-parameter req
   (lambda (stx)
