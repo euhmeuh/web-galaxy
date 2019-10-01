@@ -25,14 +25,17 @@
   (define-splicing-syntax-class name-maybe-parent
     (pattern (~seq name:id parent:id))
     (pattern name:id))
+  (define-syntax-class field-exp
+    (pattern (name option:keyword ...))
+    (pattern name:id))
   (syntax-parse stx
-    [(_ nmp:name-maybe-parent (field ...) body ...)
+    [(_ nmp:name-maybe-parent (field:field-exp ...) body ...)
      #:with function-name (format-prefix "render-" #'nmp.name)
      #:with (field-getter ...)
             (stx-map (lambda (field)
                        (define field-func (format-id field "~a-~a" #'nmp.name field))
                        #`(#,field-func nmp.name))
-                     #'(field ...))
+                     #'(field.name ...))
      #`(begin
          (struct #,@ #'nmp (field ...)
           #:methods gen:renderer
@@ -41,7 +44,7 @@
          (define function-name
            (make-parameter
              (lambda (nmp.name)
-               (let ([field field-getter] ...)
+               (let ([field.name field-getter] ...)
                  body ...)))))]))
 
 (define current-custom-renderers (make-parameter '()))
