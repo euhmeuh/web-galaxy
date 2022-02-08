@@ -12,6 +12,7 @@
   redirect/see-other
   redirect/cookie
   response/page
+  response/xml
   response/raw
   response/file
   response/json
@@ -59,6 +60,12 @@
 (define (response/page content)
   (response/xexpr
     #:preamble #"<!DOCTYPE html>"
+    content))
+
+(define (response/xml content)
+  (response/xexpr
+    #:preamble #"<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+    #:mime-type #"text/xml; charset=utf-8"
     content))
 
 (define (response/raw #:code [code 200]
