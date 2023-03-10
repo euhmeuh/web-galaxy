@@ -5,4 +5,4 @@
 (define build-deps '())
 (define pkg-desc "Implementation (no documentation) part of \"web-galaxy\"")
 (define pkg-authors '(euhmeuh))
-(define version "0.1.0")
+(define version "0.1")
