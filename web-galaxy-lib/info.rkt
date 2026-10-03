@@ -1,8 +1,10 @@
 #lang info
 
 (define collection 'multi)
-(define deps '("base" "anaphoric" "web-server-lib"))
-(define build-deps '())
+(define deps '("db-lib"
+               "srfi-lite-lib"
+               "base" "anaphoric" "web-server-lib"))
+(define build-deps '("rackunit-lib"))
 (define pkg-desc "Implementation (no documentation) part of \"web-galaxy\"")
 (define pkg-authors '(euhmeuh))
-(define version "0.1.0")
+(define version "0.1")
